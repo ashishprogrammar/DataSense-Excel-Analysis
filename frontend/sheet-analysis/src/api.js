@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://datasense-excel-analysis.onrender.com/",
+  baseURL: "https://datasense-excel-analysis.onrender.com/api",
   withCredentials: false,
 });
 
