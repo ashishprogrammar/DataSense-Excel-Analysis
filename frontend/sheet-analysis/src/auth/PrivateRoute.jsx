@@ -1,5 +1,4 @@
-
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../auth/AuthContext";
 
@@ -7,7 +6,7 @@ const PrivateRoute = ({ children, adminOnly = false }) => {
   const { authData } = useContext(AuthContext);
 
   if (!authData) {
-    return <Navigate to="/" />;
+    return <Navigate to="/login" replace />;
   }
 
   if (adminOnly && authData.role !== "admin") {
@@ -17,7 +16,4 @@ const PrivateRoute = ({ children, adminOnly = false }) => {
   return children;
 };
 
-
 export default PrivateRoute;
-
-

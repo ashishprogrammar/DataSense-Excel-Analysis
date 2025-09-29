@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../api"; // ✅ centralized axios instance
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS = ["#10b981", "#3b82f6", "#f59e0b"];
@@ -10,13 +10,10 @@ const Overview = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/admin/stats", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await API.get("/admin/stats"); // ✅ no need to manually add token
         setStats(res.data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching stats:", err);
       }
     };
     fetchStats();
@@ -25,12 +22,15 @@ const Overview = () => {
   return (
     <div>
       <h2>Dashboard Overview</h2>
+
+      {/* Stats Cards */}
       <div className="stats-container">
-        <div className="stat-card">Total Users: {stats.totalUsers}</div>
-        <div className="stat-card">Active Users: {stats.activeUsers}</div>
-        <div className="stat-card">Total Uploads: {stats.totalUploads}</div>
+        <div className="stat-card">Total Users: {stats.totalUsers || 0}</div>
+        <div className="stat-card">Active Users: {stats.activeUsers || 0}</div>
+        <div className="stat-card">Total Uploads: {stats.totalUploads || 0}</div>
       </div>
 
+      {/* Chart */}
       <div className="charts-container">
         <div className="chart-card">
           <h3>Chart Types Used</h3>

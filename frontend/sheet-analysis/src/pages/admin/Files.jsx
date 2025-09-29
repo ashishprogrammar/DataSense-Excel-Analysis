@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../api"; // ✅ centralized axios instance
 import "./Admin.css";
 
 const Files = () => {
@@ -9,10 +9,7 @@ const Files = () => {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/admin/files", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await API.get("/admin/files");
         setFiles(res.data);
       } catch (err) {
         console.error("Error fetching files:", err);
@@ -26,11 +23,8 @@ const Files = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this file?")) return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/admin/files/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFiles(files.filter((file) => file._id !== id));
+      await API.delete(`/admin/files/${id}`);
+      setFiles((prev) => prev.filter((file) => file._id !== id));
     } catch (err) {
       console.error("Error deleting file:", err);
     }
@@ -69,7 +63,7 @@ const Files = () => {
                     Delete
                   </button>
                   <a
-                    href={`http://localhost:5000/uploads/${file.fileName}`}
+                    href={`${import.meta.env.VITE_API_BASE_URL}/uploads/${file.fileName}`} 
                     target="_blank"
                     rel="noreferrer"
                     className="download-btn"

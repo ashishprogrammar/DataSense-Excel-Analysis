@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Bar, Line, Pie } from "react-chartjs-2";
 import "../styles/FileUpload.css";
 import { saveAs } from "file-saver";
+import API from "../api"; // ✅ centralized axios instance
+
+// chart.js imports
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -37,21 +39,16 @@ const FileUpload = ({ onUploadSuccess }) => {
   const [selectedY, setSelectedY] = useState("");
   const [chartType, setChartType] = useState("bar");
 
-  
+  // ✅ Upload file
   const uploadFile = async (fileToUpload) => {
     if (!fileToUpload) return;
     const formData = new FormData();
     formData.append("file", fileToUpload);
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:5000/api/files/upload",
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await API.post("/files/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       const { fileId, columnTypes, dataPreview } = res.data;
       setFileId(fileId);
@@ -68,19 +65,18 @@ const FileUpload = ({ onUploadSuccess }) => {
     }
   };
 
-  
+  // ✅ Handle file input
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) setFile(selectedFile);
   };
 
-  
   const handleUploadClick = () => {
     if (!file) return alert("Please select a file.");
     uploadFile(file);
   };
 
-  
+  // ✅ Drag and drop
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -102,11 +98,11 @@ const FileUpload = ({ onUploadSuccess }) => {
     if (droppedFiles && droppedFiles.length > 0) {
       const droppedFile = droppedFiles[0];
       setFile(droppedFile);
-      uploadFile(droppedFile); 
+      uploadFile(droppedFile);
     }
   };
 
-  
+  // ✅ Save chart options
   const handleChartOptionsSubmit = async () => {
     if (!selectedX || !selectedY || !chartType || !fileId) {
       alert("Please select all chart options.");
@@ -114,12 +110,11 @@ const FileUpload = ({ onUploadSuccess }) => {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.put(
-        `http://localhost:5000/api/files/${fileId}/chart-options`,
-        { selectedX, selectedY, chartType },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await API.put(`/files/${fileId}/chart-options`, {
+        selectedX,
+        selectedY,
+        chartType,
+      });
       console.log("Chart options saved:", res.data);
       alert("Chart options saved successfully.");
     } catch (error) {
@@ -128,7 +123,7 @@ const FileUpload = ({ onUploadSuccess }) => {
     }
   };
 
-  
+  // ✅ Chart data
   const chartData = {
     labels: dataPreview.map((row) => row[selectedX]),
     datasets: [
@@ -147,7 +142,7 @@ const FileUpload = ({ onUploadSuccess }) => {
     maintainAspectRatio: false,
   };
 
-  
+  // ✅ Download chart
   const downloadChart = () => {
     const canvas = document.getElementById("chartCanvas");
     if (canvas) {
@@ -156,7 +151,7 @@ const FileUpload = ({ onUploadSuccess }) => {
     }
   };
 
-  
+  // ✅ Render chart
   const renderChart = () => {
     if (!selectedX || !selectedY || dataPreview.length === 0) return null;
 
@@ -185,7 +180,7 @@ const FileUpload = ({ onUploadSuccess }) => {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      
+      {/* File Upload */}
       <div className="file-upload-header">
         <input
           type="file"
@@ -202,14 +197,13 @@ const FileUpload = ({ onUploadSuccess }) => {
         </button>
       </div>
 
-      
       {file && (
         <p className="selected-file">
           Selected File: <strong>{file.name}</strong>
         </p>
       )}
 
-      
+      {/* Data Preview */}
       {dataPreview.length > 0 && (
         <div className="data-preview">
           <h4>📄 Data Preview</h4>
@@ -234,42 +228,62 @@ const FileUpload = ({ onUploadSuccess }) => {
         </div>
       )}
 
-      
+      {/* Chart Options */}
       {columnTypes && (
         <div className="chart-options-panel">
           <h3>Select Chart Options</h3>
           <div className="form-group">
             <label>X-Axis:</label>
-            <select value={selectedX} onChange={(e) => setSelectedX(e.target.value)}>
-              <option value="" disabled>-- Select X Axis --</option>
+            <select
+              value={selectedX}
+              onChange={(e) => setSelectedX(e.target.value)}
+            >
+              <option value="" disabled>
+                -- Select X Axis --
+              </option>
               {Object.keys(columnTypes)
-              .filter((col) => isNaN(col))
-              .map((col) => (
-                <option key={col} value={col}>{col}</option>
-              ))}
+                .filter((col) => isNaN(col))
+                .map((col) => (
+                  <option key={col} value={col}>
+                    {col}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="form-group">
             <label>Y-Axis:</label>
-            <select value={selectedY} onChange={(e) => setSelectedY(e.target.value)}>
-              <option value="" disabled>-- Select Y Axis --</option>
+            <select
+              value={selectedY}
+              onChange={(e) => setSelectedY(e.target.value)}
+            >
+              <option value="" disabled>
+                -- Select Y Axis --
+              </option>
               {Object.keys(columnTypes)
                 .filter((col) => isNaN(col))
                 .filter((col) => columnTypes[col] === "numeric")
                 .map((col) => (
-                  <option key={col} value={col}>{col}</option>
+                  <option key={col} value={col}>
+                    {col}
+                  </option>
                 ))}
             </select>
           </div>
           <div className="form-group">
             <label>Chart Type:</label>
-            <select value={chartType} onChange={(e) => setChartType(e.target.value)}>
+            <select
+              value={chartType}
+              onChange={(e) => setChartType(e.target.value)}
+            >
               <option value="bar">Bar</option>
               <option value="line">Line</option>
               <option value="pie">Pie</option>
             </select>
           </div>
-          <button className="save-options-btn" onClick={handleChartOptionsSubmit}>
+          <button
+            className="save-options-btn"
+            onClick={handleChartOptionsSubmit}
+          >
             Save Chart Options
           </button>
         </div>
@@ -289,4 +303,3 @@ const FileUpload = ({ onUploadSuccess }) => {
 };
 
 export default FileUpload;
-

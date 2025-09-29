@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import axios from "axios";
+import API from "../api"; // ✅ use central axios
 import "../styles/DashboardAIInsights.css";
 
 const DashboardAIInsights = ({ fileId, columnTypes }) => {
@@ -14,19 +13,10 @@ const DashboardAIInsights = ({ fileId, columnTypes }) => {
       if (!selectedX || !selectedY) return;
 
       setLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("Token not found! Make sure user is logged in.");
-        return;
-      }
 
-      const res = await axios.get(
-        `http://localhost:5000/api/files/${fileId}/ai-insights`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { selectedX, selectedY },
-        }
-      );
+      const res = await API.get(`/files/${fileId}/ai-insights`, {
+        params: { selectedX, selectedY },
+      });
 
       setAiInsights(res.data);
     } catch (error) {
@@ -46,12 +36,12 @@ const DashboardAIInsights = ({ fileId, columnTypes }) => {
           <select value={selectedX} onChange={(e) => setSelectedX(e.target.value)}>
             <option value="">Select X column</option>
             {Object.keys(columnTypes)
-            .filter((col) => col !== "0")
-            .map((col) => (
-              <option key={col} value={col}>
-                {col} ({columnTypes[col]})
-              </option>
-            ))}
+              .filter((col) => col !== "0")
+              .map((col) => (
+                <option key={col} value={col}>
+                  {col} ({columnTypes[col]})
+                </option>
+              ))}
           </select>
         </label>
 
@@ -60,12 +50,12 @@ const DashboardAIInsights = ({ fileId, columnTypes }) => {
           <select value={selectedY} onChange={(e) => setSelectedY(e.target.value)}>
             <option value="">Select Y column</option>
             {Object.keys(columnTypes)
-            .filter((col) => col !== "0")
-            .map((col) => (
-              <option key={col} value={col}>
-                {col} ({columnTypes[col]})
-              </option>
-            ))}
+              .filter((col) => col !== "0")
+              .map((col) => (
+                <option key={col} value={col}>
+                  {col} ({columnTypes[col]})
+                </option>
+              ))}
           </select>
         </label>
 
@@ -100,6 +90,3 @@ const DashboardAIInsights = ({ fileId, columnTypes }) => {
 };
 
 export default DashboardAIInsights;
-
-
-

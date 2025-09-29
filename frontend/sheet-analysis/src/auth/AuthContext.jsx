@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState } from "react";
-import axios from "axios";
+import API from "../api"; 
 
 export const AuthContext = createContext();
 
@@ -17,12 +17,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+      const res = await API.post("/auth/login", { email, password }); // ✅ changed
 
-      
       localStorage.setItem("token", res.data.token);
 
       if (res.data && res.data.user) {
@@ -36,9 +32,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, message: "Login successful" };
     } catch (err) {
-      
-      const msg =
-        err.response?.data?.message || "Invalid email or password";
+      const msg = err.response?.data?.message || "Invalid email or password";
       return { success: false, message: msg };
     }
   };
@@ -55,6 +49,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-
-

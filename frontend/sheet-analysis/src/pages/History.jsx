@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import axios from "axios";
 import { Chart, registerables } from "chart.js";
 import { ThemeContext } from "../context/ThemeContext";
 import { saveAs } from "file-saver";
 import Navbar from "../components/Navbar";
+import API from "../api"; // ✅ centralized axios instance
 import "../styles/History.css";
 
 Chart.register(...registerables);
@@ -20,35 +20,30 @@ function HistoryPage() {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
+  // ✅ Fetch history using API wrapper
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/files/historyWithChartData", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
+    API.get("/files/historyWithChartData")
       .then((res) => setHistory(Array.isArray(res.data) ? res.data : []))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error fetching history:", err));
   }, []);
 
   const filteredHistory = history.filter((file) =>
     file.fileName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // ✅ File download
   const handleDownload = async (file) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:5000/api/files/download/${file.fileId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: "blob", // important for binary files
-        }
-      );
-
+      const response = await API.get(`/files/download/${file.fileId}`, {
+        responseType: "blob",
+      });
       saveAs(response.data, file.originalName);
     } catch (err) {
       console.error("Download failed:", err);
     }
   };
+
+  // ✅ Sorting
   const sortedHistory = [...filteredHistory].sort((a, b) => {
     if (sortKey === "uploadDate") {
       return sortOrder === "asc"
@@ -66,6 +61,7 @@ function HistoryPage() {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
+  // ✅ View chart
   const viewChart = (file) => {
     setSelectedFile(file);
     setShowModal(true);
@@ -112,26 +108,22 @@ function HistoryPage() {
     }, 50);
   };
 
+  // ✅ Delete single file
   const handleDeleteFile = async (id) => {
     if (!window.confirm("Are you sure you want to delete this file?")) return;
-
     try {
-      await axios.delete(`http://localhost:5000/api/files/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      await API.delete(`/files/${id}`);
       setHistory(history.filter((file) => file._id !== id));
     } catch (err) {
       console.error("Delete failed:", err);
     }
   };
 
+  // ✅ Clear all history
   const handleClearAll = async () => {
     if (!window.confirm("This will clear ALL history. Proceed?")) return;
-
     try {
-      await axios.delete("http://localhost:5000/api/files", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      await API.delete("/files");
       setHistory([]);
     } catch (err) {
       console.error("Clear history failed:", err);
@@ -183,7 +175,7 @@ function HistoryPage() {
               <th>Rows</th>
               <th>Action</th>
               <th onClick={() => handleSort("uploadDate")}>Date</th>
-              <th>Download Chart</th>
+              <th>Download File</th>
               <th>Delete</th>
             </tr>
           </thead>

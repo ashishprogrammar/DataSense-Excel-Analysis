@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import API from '../api'; // ✅ centralized axios instance
 import '../styles/Register.css';
 
 const Register = () => {
@@ -27,7 +27,7 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const res = await API.post('/auth/register', formData); // ✅ no localhost
       if (res.status === 201 || res.status === 200) {
         alert('Account created successfully! You can now login.');
         navigate('/');
@@ -94,16 +94,16 @@ const Register = () => {
         </div>
 
         <div className="input-group">
-          <label htmlFor="adminCode">adminCode</label>
+          <label htmlFor="adminCode">Admin Code</label>
           <input
             type="text"
             id="adminCode"
             name="adminCode"
-            placeholder="Enter an AdminCode"
+            placeholder="Enter an Admin Code (optional)"
             value={formData.adminCode}
             onChange={handleChange}
           />
-          <i className="fas fa-lock"></i>
+          <i className="fas fa-key"></i>
         </div>
 
         <button type="submit" disabled={isSubmitting}>
@@ -115,7 +115,7 @@ const Register = () => {
         </button>
 
         <div className="register-footer">
-          Already have an account? <a href="/">Sign in</a>
+          Already have an account? <Link to="/login">Sign in</Link>
         </div>
       </form>
     </div>
