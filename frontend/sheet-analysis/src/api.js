@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://datasense-excel-analysis.onrender.com/api", // 🔗 your Render backend
+  baseURL: "https://datasense-excel-analysis.onrender.com/",
+  withCredentials: false,
 });
 
 // Attach token automatically
