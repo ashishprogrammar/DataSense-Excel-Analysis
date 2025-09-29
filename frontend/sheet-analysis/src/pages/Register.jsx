@@ -27,7 +27,7 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await API.post('/auth/register', formData); // ✅ no localhost
+      const res = await API.post('/auth/register', formData);
       if (res.status === 201 || res.status === 200) {
         alert('Account created successfully! You can now login.');
         navigate('/');
