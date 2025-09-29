@@ -22,7 +22,7 @@ A full-stack web application for analyzing Excel files with user authentication 
 - React + React Router
 - Context API (Auth & Theme)
 - Axios
-- TailwindCSS (for styling)
+- CSS (for styling)
 
 **Backend**
 - Node.js + Express
