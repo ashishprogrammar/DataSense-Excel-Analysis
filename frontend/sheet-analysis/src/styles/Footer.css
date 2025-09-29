@@ -1,0 +1,39 @@
+.footer {
+  background-color: #1f78d1;
+  color: white;
+  text-align: center;
+  padding: 20px 10px;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer-links {
+  margin-top: 10px;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #cce0ff;
+}
+
+body.dark-mode footer {
+  background-color: #000000;
+  color: #e0e0e0;
+}
+
+body.dark-mode footer a {
+  color: #a0c0ff;
+}
+
+body.dark-mode footer a:hover {
+  color: #ffffff;
+}
+
+
