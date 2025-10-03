@@ -1,10 +1,10 @@
-# 📊 DataSense - Excel Analysis
+# DataSense - Excel Analysis
 
 A full-stack web application for analyzing Excel files with user authentication and admin management.
 
 ---
 
-## 🚀 Features
+## Features
 - User Registration & Login (JWT Authentication)
 - Role-based access (User / Admin)
 - Upload & Analyze Excel files
@@ -17,7 +17,7 @@ A full-stack web application for analyzing Excel files with user authentication 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 **Frontend**
 - React + React Router
 - Context API (Auth & Theme)
@@ -34,9 +34,9 @@ A full-stack web application for analyzing Excel files with user authentication 
 
 ---
 
-## ⚙️ Installation
+## Installation
 
-### 1️⃣ Clone the repository
+### 1️Clone the repository
 ```bash
 git clone https://github.com/ashishprogrammar/DataSense-Excel-Analysis.git
 cd DataSense-Excel-Analysis
